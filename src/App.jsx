@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./style.css";
-import TaskBoard from "./components/TaskBoard";
+import TaskBoard from "./components/KanbanView";
 
 export default function App() {
   const [rightPanelActive, setRightPanelActive] = useState(false);

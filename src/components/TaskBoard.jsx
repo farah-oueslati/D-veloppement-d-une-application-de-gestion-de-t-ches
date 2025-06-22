@@ -48,12 +48,56 @@ export default function TaskBoard({ onLogout }) {
   });
   const [editingTask, setEditingTask] = useState(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [filterPriority, setFilterPriority] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+
+  const handleAddTask = () => {
+  const taskId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+  setTasks([...tasks, {
+    ...newTask,
+    id: taskId
+  }]);
+  setShowAddDialog(false);
+  resetNewTask();
+};
+
+const handleNewTaskFieldChange = (field, value) => {
+  setNewTask(prev => ({
+    ...prev,
+    [field]: value
+  }));
+};
+
+const resetNewTask = () => {
+  setNewTask({
+    id: null,
+    title: '',
+    description: '',
+    status: 'À faire',
+    priority: 'Moyenne',
+    category: 'Travail',
+    date: new Date(),
+    deadline: new Date()
+  });
+};
 
   const handleStatusChange = (taskId, newStatus) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, status: newStatus } : task
-    ));
-  };
+  const updatedTasks = tasks.map(task =>
+    task.id === taskId ? { ...task, status: newStatus, animate: true } : task
+  );
+  setTasks(updatedTasks);
+
+  // Enlève l'animation après 500ms
+  setTimeout(() => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, animate: false } : task
+      )
+    );
+  }, 500);
+};
+
 
   const handlePriorityChange = (taskId, newPriority) => {
     setTasks(tasks.map(task => 
@@ -150,6 +194,28 @@ export default function TaskBoard({ onLogout }) {
           onChange={(e) => setSearchTerm(e.target.value)} 
           className="search-input"
         />
+        <div className="filters">
+        <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
+          <option value="">Toutes les priorités</option>
+          <option value="Haute">Haute</option>
+          <option value="Moyenne">Moyenne</option>
+          <option value="Basse">Basse</option>
+        </select>
+
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+          <option value="">Tous les statuts</option>
+          <option value="À faire">À faire</option>
+          <option value="En cours">En cours</option>
+          <option value="Terminé">Terminé</option>
+        </select>
+
+        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+          <option value="">Toutes les catégories</option>
+          <option value="Travail">Travail</option>
+          <option value="Personnel">Personnel</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
 
         <table className="tasks-table">
           <thead>
@@ -166,13 +232,17 @@ export default function TaskBoard({ onLogout }) {
           </thead>
           <tbody>
             {tasks
-              .filter(task =>
-                task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                task.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                task.status.toLowerCase().includes(searchTerm.toLowerCase()) 
-              )
+              .filter(task => {
+                const matchSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  task.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  task.status.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchPriority = filterPriority ? task.priority === filterPriority : true;
+                const matchStatus = filterStatus ? task.status === filterStatus : true;
+                const matchCategory = filterCategory ? task.category === filterCategory : true;
+                return matchSearch && matchPriority && matchStatus && matchCategory;
+              })
               .map(task => (
-                <tr key={task.id}>
+                <tr key={task.id} className={task.animate ? "status-changed" : ""}>
                   <td>{task.title}</td>
                   <td>{task.description}</td>
                   <td>
@@ -288,6 +358,23 @@ export default function TaskBoard({ onLogout }) {
               ))}
           </tbody>
         </table>
+        <button className="add-btn" onClick={() => {
+          const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+          setEditingTask({
+            id: newId,
+            title: '',
+            description: '',
+            status: 'À faire',
+            priority: 'Moyenne',
+            category: 'Travail',
+            date: new Date(),
+            deadline: new Date()
+          });
+          setShowEditDialog(true);
+        }}>
+          + Ajouter une tâche
+        </button>
+
       </section>
 
       {showEditDialog && (
