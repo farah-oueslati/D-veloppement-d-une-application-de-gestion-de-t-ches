@@ -1,9 +1,12 @@
+/* ========== GLOBAL STYLES ========== */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f5f5f5;
 }
+
+/* ========== CONTAINER PRINCIPAL DU KANBAN ========== */
 .kanban-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -13,6 +16,7 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* ========== EN-TÊTE DU KANBAN ========== */
 .kanban-header {
   display: flex;
   justify-content: space-between;
@@ -43,18 +47,21 @@ body {
   text-decoration: underline;
 }
 
+/* ========== DIVISEUR ENTRE LES SECTIONS ========== */
 .divider {
   height: 1px;
   background-color: #e0e0e0;
   margin: 15px 0;
 }
+
+/* ========== TITRE DE SECTION ========== */
 h2 {
   color: #6a1b9a;
   margin-bottom: 15px;
   width: 100%;
 }
 
-
+/* ========== BARRE DE CONTRÔLE : RECHERCHE + FILTRES ========== */
 .kanban-controls {
   display: flex;
   flex-direction: column;
@@ -88,6 +95,7 @@ h2 {
   transition: background-color 0.3s;
 }
 
+/* ========== STRUCTURE DES COLONNES DU KANBAN ========== */
 .kanban-board {
   display: flex;
   gap: 20px;
@@ -96,7 +104,7 @@ h2 {
 
 .kanban-column {
   flex: 1;
-  background: #f8f9fa;
+  background: #f3e5f5;
   border-radius: 8px;
   padding: 15px;
   min-height: 500px;
@@ -106,14 +114,18 @@ h2 {
   margin-top: 0;
   padding-bottom: 10px;
   border-bottom: 2px solid #eee;
-  color: #2c3e50;
+  color: #4a148c;
+  text-align: center;
+  font-weight: bold;
 }
 
+/* ========== LISTE DE TÂCHES ========== */
 .tasks-list {
   margin-top: 15px;
   min-height: 100px;
 }
 
+/* ========== CARTE DE TÂCHE ========== */
 .task-card {
   background: white;
   border-radius: 6px;
@@ -128,6 +140,7 @@ h2 {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+/* ========== COULEURS SELON PRIORITÉ ========== */
 .task-card.haute {
   border-left: 4px solid #e74c3c;
 }
@@ -140,6 +153,7 @@ h2 {
   border-left: 4px solid #2ecc71;
 }
 
+/* ========== EN-TÊTE DE TÂCHE ========== */
 .task-header {
   display: flex;
   justify-content: space-between;
@@ -152,6 +166,7 @@ h2 {
   color: #2c3e50;
 }
 
+/* ========== INDICATEUR DE PRIORITÉ ========== */
 .priority {
   font-size: 0.8rem;
   padding: 3px 8px;
@@ -174,6 +189,7 @@ h2 {
   color: #2e7d32;
 }
 
+/* ========== DESCRIPTION DE TÂCHE ========== */
 .task-description {
   color: #555;
   margin-bottom: 15px;
@@ -181,6 +197,7 @@ h2 {
   line-height: 1.4;
 }
 
+/* ========== MÉTA-DONNÉES DE LA TÂCHE (date, catégorie...) ========== */
 .task-meta {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -207,144 +224,198 @@ h2 {
   text-decoration: underline;
 }
 
+/* ========== BOUTONS D’ACTION POUR UNE TÂCHE ========== */
 .task-actions {
   display: flex;
   gap: 10px;
 }
 
 .task-actions button {
-  padding: 5px 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
-  transition: background-color 0.2s;
+  font-size: 11px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .task-actions button:first-child {
-  background-color: #3498db;
+  background-color: #e489d0;
   color: white;
 }
 
 .task-actions button:first-child:hover {
-  background-color: #2980b9;
+  background-color: #b1489b;
+  transform: translateY(-2px);
 }
 
 .task-actions button:last-child {
-  background-color: #e74c3c;
+  background-color: #953c82;
   color: white;
 }
 
 .task-actions button:last-child:hover {
-  background-color: #c0392b;
+  background-color: #642857;
+  transform: translateY(-2px);
 }
 
+/* ========== BOUTON POUR AJOUTER UNE TÂCHE ========== */
 .add-task-btn {
-  background-color: #2ecc71;
+  background-color: #7e2cb1;
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.2s;
 }
 
 .add-task-btn:hover {
-  background-color: #27ae60;
+  background-color: #561180;
 }
 
-/* Edit Dialog Styles */
+/* ========== FENÊTRE MODALE D'ÉDITION DE TÂCHE ========== */
 .edit-dialog-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 100;
 }
 
 .edit-dialog {
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  background: linear-gradient(to bottom right, #f7f2fb, #ffffff);
+  padding: 30px;
+  border-radius: 16px;
+  width: 520px;
+  max-width: 90%;
+  box-shadow: 0 8px 30px rgba(106, 27, 154, 0.25);
+  animation: fadeInScale 0.3s ease-in-out;
+  position: relative;
+  font-family: "Segoe UI", sans-serif;
 }
 
 .edit-dialog h3 {
   margin-top: 0;
-  color: #2c3e50;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  font-size: 24px;
+  color: #6a1b9a;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #a15fd0;
+  box-shadow: 0 0 0 3px rgba(161, 95, 208, 0.2);
+  outline: none;
 }
 
 .form-group textarea {
-  min-height: 80px;
+  height: 90px;
+  resize: vertical;
 }
 
 .dialog-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+  justify-content: space-between;
+  margin-top: 30px;
 }
 
-.dialog-actions button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 4px;
+.dialog-actions .confirm-btn,
+.dialog-actions .cancel-btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.cancel-btn {
-  background-color: #95a5a6;
+.dialog-actions .cancel-btn {
+  margin-right: 12px;
+  background-color: #f4f4f4;
+  border: 1px solid #bbb;
+  color: #333;
+}
+
+.dialog-actions .cancel-btn:hover {
+  background-color: #e2e2e2;
+}
+
+.dialog-actions .confirm-btn {
+  background-color: #8f81ae;
   color: white;
+  border: none;
 }
 
-.cancel-btn:hover {
-  background-color: #7f8c8d;
+.dialog-actions .confirm-btn:hover {
+  background-color: #745f9b;
 }
 
-.confirm-btn {
-  background-color: #2ecc71;
-  color: white;
+/* ========== PERSONNALISATION DE REACT DATE PICKER ========== */
+.react-datepicker {
+  font-family: Arial, sans-serif;
+  border: none;
 }
 
-.confirm-btn:hover {
-  background-color: #27ae60;
+.react-datepicker__header {
+  background-color: #f8f5fc;
+  border-bottom: 1px solid #e8e0f0;
 }
 
-/* Date Picker Styles */
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: #4a148c;
+  font-weight: 600;
+}
+
+.react-datepicker__day--selected {
+  background-color: #6a1b9a;
+}
+
+.react-datepicker__day--selected:hover {
+  background-color: #4a148c;
+}
+
+.react-datepicker__navigation--previous {
+  border-right-color: #6a1b9a;
+}
+
+.react-datepicker__navigation--next {
+  border-left-color: #6a1b9a;
+}
+
+/* ========== OVERLAY DU DATE PICKER ========== */
 .date-picker-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -352,37 +423,45 @@ h2 {
 }
 
 .date-picker-container {
-  background: white;
+  background-color: white;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .date-picker-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: center;
+  gap: 15px;
   margin-top: 15px;
 }
 
 .date-picker-actions button {
-  padding: 8px 15px;
+  width: 100px;
+  padding: 10px 0;
+  border-radius: 6px;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
 }
 
 .date-picker-actions button:first-child {
-  background-color: #2ecc71;
+  background-color: #6a1b9a;
   color: white;
 }
 
 .date-picker-actions button:last-child {
-  background-color: #e74c3c;
+  background-color: #678bb7;
   color: white;
 }
 
-/* Animation */
+.date-picker-actions button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* ========== ANIMATION DE STATUT MODIFIÉ ========== */
 .status-changed {
   animation: pulse 0.5s;
 }
@@ -393,18 +472,27 @@ h2 {
   100% { transform: scale(1); }
 }
 
-/* Responsive */
+/* ========== RESPONSIVE (ÉCRAN PETIT) ========== */
 @media (max-width: 768px) {
   .kanban-board {
     flex-direction: column;
   }
-  
+
   .kanban-controls {
     flex-direction: column;
-    
   }
-  
+
   .search-input {
-    max-width: none;
+    width: 100%;
+  }
+
+  .date-picker-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .date-picker-actions button {
+    width: 100%;
+    max-width: 200px;
   }
 }

@@ -120,13 +120,23 @@ export default function KanbanBoard({ onLogout }) {
     setShowEditDialog(true);
   };
 
-  const handleSaveTask = () => {
-    setTasks(tasks.map(task => 
-      task.id === editingTask.id ? editingTask : task
-    ));
+    const handleSaveTask = () => {
+    const taskExists = tasks.some(task => task.id === editingTask.id);
+    
+    if (taskExists) {
+      // Modifier une tâche existante
+      setTasks(tasks.map(task =>
+        task.id === editingTask.id ? editingTask : task
+      ));
+    } else {
+      // Ajouter une nouvelle tâche
+      setTasks([...tasks, editingTask]);
+    }
+
     setShowEditDialog(false);
     setEditingTask(null);
   };
+
 
   const handleCancelEditTask = () => {
     setShowEditDialog(false);
@@ -163,7 +173,7 @@ export default function KanbanBoard({ onLogout }) {
       <h2>Mes Tâches Assignées</h2>
       <h2>Mes Tâches Assignées</h2>
       <h2>Mes Tâches Assignées</h2>
-      
+
       <header className="kanban-header">
         <h1>Espace Utilisateur</h1>
         <nav>
