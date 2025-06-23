@@ -160,6 +160,10 @@ export default function KanbanBoard({ onLogout }) {
 
   return (
     <div className="kanban-container">
+      <h2>Mes Tâches Assignées</h2>
+      <h2>Mes Tâches Assignées</h2>
+      <h2>Mes Tâches Assignées</h2>
+      
       <header className="kanban-header">
         <h1>Espace Utilisateur</h1>
         <nav>
