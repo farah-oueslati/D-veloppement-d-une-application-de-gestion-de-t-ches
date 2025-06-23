@@ -42,12 +42,7 @@ const initialTasks = [
 export default function KanbanBoard({ onLogout }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingDate, setEditingDate] = useState({ 
-    taskId: null, 
-    field: null,
-    tempDate: null,
-    originalDate: null
-  });
+  const [editingDate, setEditingDate] = useState({ taskId: null, field: null, tempDate: null, originalDate: null });
   const [editingTask, setEditingTask] = useState(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [filterPriority, setFilterPriority] = useState("");
@@ -56,13 +51,12 @@ export default function KanbanBoard({ onLogout }) {
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
-
     const { source, destination, draggableId } = result;
 
     if (source.droppableId !== destination.droppableId) {
       const taskId = parseInt(draggableId);
       const newStatus = destination.droppableId;
-      
+
       setTasks(tasks.map(task => 
         task.id === taskId ? { ...task, status: newStatus, animate: true } : task
       ));
@@ -84,19 +78,11 @@ export default function KanbanBoard({ onLogout }) {
   };
 
   const handleTempDateChange = (date) => {
-    setEditingDate(prev => ({
-      ...prev,
-      tempDate: date
-    }));
+    setEditingDate(prev => ({ ...prev, tempDate: date }));
   };
 
   const handleStartEdit = (taskId, field, currentDate) => {
-    setEditingDate({
-      taskId,
-      field,
-      tempDate: currentDate,
-      originalDate: currentDate
-    });
+    setEditingDate({ taskId, field, tempDate: currentDate, originalDate: currentDate });
   };
 
   const handleConfirmDate = () => {
@@ -120,23 +106,16 @@ export default function KanbanBoard({ onLogout }) {
     setShowEditDialog(true);
   };
 
-    const handleSaveTask = () => {
+  const handleSaveTask = () => {
     const taskExists = tasks.some(task => task.id === editingTask.id);
-    
     if (taskExists) {
-      // Modifier une tâche existante
-      setTasks(tasks.map(task =>
-        task.id === editingTask.id ? editingTask : task
-      ));
+      setTasks(tasks.map(task => task.id === editingTask.id ? editingTask : task));
     } else {
-      // Ajouter une nouvelle tâche
       setTasks([...tasks, editingTask]);
     }
-
     setShowEditDialog(false);
     setEditingTask(null);
   };
-
 
   const handleCancelEditTask = () => {
     setShowEditDialog(false);
@@ -144,29 +123,22 @@ export default function KanbanBoard({ onLogout }) {
   };
 
   const handleTaskFieldChange = (field, value) => {
-    setEditingTask(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setEditingTask(prev => ({ ...prev, [field]: value }));
   };
 
   const formatDate = (date) => {
-    return date.toLocaleDateString('fr-FR', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
+    return date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   const filteredTasks = tasks.filter(task => {
-  const matchSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    task.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    task.status.toLowerCase().includes(searchTerm.toLowerCase());
-  const matchPriority = filterPriority ? task.priority === filterPriority : true;
-  const matchStatus = filterStatus ? task.status === filterStatus : true;
-  const matchCategory = filterCategory ? task.category === filterCategory : true;
-  return matchSearch && matchPriority && matchStatus && matchCategory;
-});
+    const matchSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.status.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchPriority = filterPriority ? task.priority === filterPriority : true;
+    const matchStatus = filterStatus ? task.status === filterStatus : true;
+    const matchCategory = filterCategory ? task.category === filterCategory : true;
+    return matchSearch && matchPriority && matchStatus && matchCategory;
+  });
 
   return (
     <div className="kanban-container">
@@ -187,14 +159,14 @@ export default function KanbanBoard({ onLogout }) {
 
       <div className="kanban-controls">
         <h2>Mes Tâches Assignées</h2>
-        <input 
-          type="text" 
-          placeholder="Rechercher une tâche..." 
-          value={searchTerm} 
-          onChange={(e) => setSearchTerm(e.target.value)} 
+        <input
+          type="text"
+          placeholder="Rechercher une tâche..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
-        
+
         <div className="filters">
           <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
             <option value="">Toutes les priorités</option>
@@ -204,12 +176,12 @@ export default function KanbanBoard({ onLogout }) {
           </select>
 
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-          <option value="">Tous les statuts</option>
-          <option value="À faire">À faire</option>
-          <option value="En cours">En cours</option>
-          <option value="Terminé">Terminé</option>
-        </select>
-          
+            <option value="">Tous les statuts</option>
+            <option value="À faire">À faire</option>
+            <option value="En cours">En cours</option>
+            <option value="Terminé">Terminé</option>
+          </select>
+
           <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
             <option value="">Toutes les catégories</option>
             <option value="Travail">Travail</option>
@@ -224,50 +196,50 @@ export default function KanbanBoard({ onLogout }) {
           {statuses.map((status) => (
             <Droppable droppableId={status} key={status}>
               {(provided) => (
-                <div 
-                  className="kanban-column"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
+                <div className="kanban-column" ref={provided.innerRef} {...provided.droppableProps}>
                   <h3 className="column-header">{status}</h3>
                   <div className="tasks-list">
                     {filteredTasks
                       .filter(task => task.status === status)
-                      .map((task, index) => (
-                        <Draggable 
-                          key={task.id} 
-                          draggableId={task.id.toString()} 
-                          index={index}
-                        >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={`task-card ${task.priority.toLowerCase()} ${task.animate ? "status-changed" : ""}`}
-                            >
-                              <div className="task-header">
-                                <h4>{task.title}</h4>
-                                <span className="priority">{task.priority}</span>
+                      .map((task, index) => {
+                        const now = new Date();
+                        const isOverdue = task.deadline < now && task.status !== "Terminé";
+                        const isUpcoming = task.deadline > now && task.deadline - now < 3 * 24 * 60 * 60 * 1000 && task.status !== "Terminé";
+
+                        return (
+                          <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className={`task-card ${task.priority.toLowerCase()} ${task.animate ? "status-changed" : ""} ${isOverdue ? "overdue" : ""} ${isUpcoming ? "upcoming" : ""}`}
+                              >
+                                <div className="task-header">
+                                  <h4>{task.title}</h4>
+                                  <span className="priority">{task.priority}</span>
+                                </div>
+                                <p className="task-description">{task.description}</p>
+                                <div className="task-meta">
+                                  <span className="category">{task.category}</span>
+                                  <span className="date" onClick={() => handleStartEdit(task.id, 'date', task.date)}>
+                                    {formatDate(task.date)}
+                                  </span>
+                                  <span className="deadline" onClick={() => handleStartEdit(task.id, 'deadline', task.deadline)}>
+                                    Échéance: {formatDate(task.deadline)}
+                                  </span>
+                                </div>
+                                {isOverdue && <p className="reminder">⚠️ En retard</p>}
+                                {isUpcoming && <p className="reminder">⏳ Échéance proche</p>}
+                                <div className="task-actions">
+                                  <button onClick={() => handleEditTask(task)}>Modifier</button>
+                                  <button onClick={() => handleDeleteTask(task.id)}>Supprimer</button>
+                                </div>
                               </div>
-                              <p className="task-description">{task.description}</p>
-                              <div className="task-meta">
-                                <span className="category">{task.category}</span>
-                                <span className="date" onClick={() => handleStartEdit(task.id, 'date', task.date)}>
-                                  {formatDate(task.date)}
-                                </span>
-                                <span className="deadline" onClick={() => handleStartEdit(task.id, 'deadline', task.deadline)}>
-                                  Échéance: {formatDate(task.deadline)}
-                                </span>
-                              </div>
-                              <div className="task-actions">
-                                <button onClick={() => handleEditTask(task)}>Modifier</button>
-                                <button onClick={() => handleDeleteTask(task.id)}>Supprimer</button>
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
+                            )}
+                          </Draggable>
+                        );
+                      })}
                     {provided.placeholder}
                   </div>
                 </div>
@@ -277,7 +249,7 @@ export default function KanbanBoard({ onLogout }) {
         </div>
       </DragDropContext>
 
-      <button 
+      <button
         className="add-task-btn"
         onClick={() => {
           const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
@@ -297,7 +269,6 @@ export default function KanbanBoard({ onLogout }) {
         + Ajouter une tâche
       </button>
 
-      {/* Edit Task Dialog */}
       {showEditDialog && (
         <div className="edit-dialog-overlay">
           <div className="edit-dialog">
@@ -348,18 +319,13 @@ export default function KanbanBoard({ onLogout }) {
               </select>
             </div>
             <div className="dialog-actions">
-              <button className="cancel-btn" onClick={handleCancelEditTask}>
-                Annuler
-              </button>
-              <button className="confirm-btn" onClick={handleSaveTask}>
-                Enregistrer
-              </button>
+              <button className="cancel-btn" onClick={handleCancelEditTask}>Annuler</button>
+              <button className="confirm-btn" onClick={handleSaveTask}>Enregistrer</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Date Picker Dialog */}
       {editingDate.taskId && (
         <div className="date-picker-overlay">
           <div className="date-picker-container">
