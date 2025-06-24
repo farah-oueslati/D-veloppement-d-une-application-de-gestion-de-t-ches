@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styles/Kanban.css";
+import '../styles/dark-mode.css';
 
-const statuses = ["À faire", "En cours", "Terminé"];
+
+const statuses = ["À faire", "En cours", "Terminé", "Annulé"];
 
 const initialTasks = [
   {
@@ -15,7 +17,7 @@ const initialTasks = [
     priority: "Haute",
     category: "Travail",
     date: new Date("June 20, 2025"),
-    deadline: new Date("June 25, 2025")
+    deadline: new Date("June 25, 2025"),
   },
   {
     id: 2,
@@ -25,7 +27,7 @@ const initialTasks = [
     priority: "Moyenne",
     category: "Travail",
     date: new Date("June 21, 2025"),
-    deadline: new Date("June 23, 2025")
+    deadline: new Date("June 23, 2025"),
   },
   {
     id: 3,
@@ -35,11 +37,22 @@ const initialTasks = [
     priority: "Basse",
     category: "Personnel",
     date: new Date("June 22, 2025"),
-    deadline: new Date("June 22, 2025")
-  }
+    deadline: new Date("June 22, 2025"),
+  },
+  {
+    id: 4,
+    title: "Préparer le rapport",
+    description: "Créer un rapport d'activité pour le mois de juin",
+    status: "Annulé",
+    priority: "Haute",
+    category: "Travail",
+    date: new Date("June 20, 2025"),
+    deadline: new Date("June 25, 2025"),
+  },
 ];
 
 export default function KanbanBoard({ onLogout }) {
+  // Ton état original des tâches
   const [tasks, setTasks] = useState(initialTasks);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingDate, setEditingDate] = useState({ taskId: null, field: null, tempDate: null, originalDate: null });
@@ -49,6 +62,22 @@ export default function KanbanBoard({ onLogout }) {
   const [filterStatus, setFilterStatus] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
 
+  // ----------- AJOUT MODE CLAIR / SOMBRE -----------
+const [isDarkMode, setIsDarkMode] = useState(() => {
+  return localStorage.getItem("darkMode") === "true";
+});
+
+useEffect(() => {
+  if (isDarkMode) {
+    document.body.classList.add("dark");
+  } else {
+    document.body.classList.remove("dark");
+  }
+  localStorage.setItem("darkMode", isDarkMode);
+}, [isDarkMode]);
+
+  // -------------------------------------------------
+
   const handleDragEnd = (result) => {
     if (!result.destination) return;
     const { source, destination, draggableId } = result;
@@ -57,7 +86,7 @@ export default function KanbanBoard({ onLogout }) {
       const taskId = parseInt(draggableId);
       const newStatus = destination.droppableId;
 
-      setTasks(tasks.map(task => 
+      setTasks(tasks.map(task =>
         task.id === taskId ? { ...task, status: newStatus, animate: true } : task
       ));
 
@@ -72,7 +101,7 @@ export default function KanbanBoard({ onLogout }) {
   };
 
   const handlePriorityChange = (taskId, newPriority) => {
-    setTasks(tasks.map(task => 
+    setTasks(tasks.map(task =>
       task.id === taskId ? { ...task, priority: newPriority } : task
     ));
   };
@@ -87,7 +116,7 @@ export default function KanbanBoard({ onLogout }) {
 
   const handleConfirmDate = () => {
     const { taskId, field, tempDate } = editingDate;
-    setTasks(tasks.map(task => 
+    setTasks(tasks.map(task =>
       task.id === taskId ? { ...task, [field]: tempDate } : task
     ));
     setEditingDate({ taskId: null, field: null, tempDate: null, originalDate: null });
@@ -142,19 +171,37 @@ export default function KanbanBoard({ onLogout }) {
 
   return (
     <div className="kanban-container">
-      <h2>Mes Tâches Assignées</h2>
-      <h2>Mes Tâches Assignées</h2>
-      <h2>Mes Tâches Assignées</h2>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      {/* ----------- BOUTON BASCULE MODE CLAIR/SOMBRE ----------- */}
+      <button
+        onClick={() => setIsDarkMode(prev => !prev)}
+        style={{
+          marginBottom: "15px",
+          padding: "8px 16px",
+          borderRadius: "8px",
+          border: "none",
+          cursor: "pointer",
+          backgroundColor: isDarkMode ? "#8f81ae" : "#6a1b9a",
+          color: "white",
+          fontWeight: "bold",
+        }}
+      >
+        {isDarkMode ? "Mode Clair" : "Mode Sombre"}
+      </button>
 
       <header className="kanban-header">
         <h1>Espace Utilisateur</h1>
         <nav>
           <ul>
             <li>Mes Tâches</li>
-            <li onClick={onLogout}>Se déconnecter</li>
+            <li onClick={onLogout} style={{ cursor: "pointer" }}>Se déconnecter</li>
           </ul>
         </nav>
       </header>
+
       <div className="divider"></div>
 
       <div className="kanban-controls">
@@ -180,6 +227,7 @@ export default function KanbanBoard({ onLogout }) {
             <option value="À faire">À faire</option>
             <option value="En cours">En cours</option>
             <option value="Terminé">Terminé</option>
+            <option value="Annulé">Annulé</option>
           </select>
 
           <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
@@ -273,6 +321,7 @@ export default function KanbanBoard({ onLogout }) {
         <div className="edit-dialog-overlay">
           <div className="edit-dialog">
             <h3>{editingTask.id ? "Modifier la tâche" : "Ajouter une tâche"}</h3>
+
             <div className="form-group">
               <label>Titre:</label>
               <input
@@ -281,6 +330,7 @@ export default function KanbanBoard({ onLogout }) {
                 onChange={(e) => handleTaskFieldChange('title', e.target.value)}
               />
             </div>
+
             <div className="form-group">
               <label>Description:</label>
               <textarea
@@ -288,6 +338,7 @@ export default function KanbanBoard({ onLogout }) {
                 onChange={(e) => handleTaskFieldChange('description', e.target.value)}
               />
             </div>
+
             <div className="form-group">
               <label>Priorité:</label>
               <select
@@ -299,14 +350,19 @@ export default function KanbanBoard({ onLogout }) {
                 <option value="Basse">Basse</option>
               </select>
             </div>
+
             <div className="form-group">
               <label>Catégorie:</label>
-              <input
-                type="text"
+              <select
                 value={editingTask.category}
                 onChange={(e) => handleTaskFieldChange('category', e.target.value)}
-              />
+              >
+                <option value="Travail">Travail</option>
+                <option value="Personnel">Personnel</option>
+                <option value="Autre">Autre</option>
+              </select>
             </div>
+
             <div className="form-group">
               <label>Statut:</label>
               <select
@@ -318,6 +374,7 @@ export default function KanbanBoard({ onLogout }) {
                 ))}
               </select>
             </div>
+
             <div className="dialog-actions">
               <button className="cancel-btn" onClick={handleCancelEditTask}>Annuler</button>
               <button className="confirm-btn" onClick={handleSaveTask}>Enregistrer</button>

@@ -1,0 +1,83 @@
+/* === MODE SOMBRE === */
+
+body.dark {
+  background-color: #121212;
+  color: #ddd;
+}
+
+body.dark .kanban-container {
+  background-color: #2c2c2c;
+  box-shadow: none;
+  color: #ddd;
+}
+
+body.dark .kanban-header h1,
+body.dark .kanban-header nav ul li {
+  color: #b39ddb;
+}
+
+body.dark .kanban-column {
+  background-color: #3c3c3c;
+}
+
+body.dark .column-header {
+  color: #ddd;
+  border-bottom-color: #666;
+}
+
+body.dark .task-card {
+  background-color: #444;
+  color: #eee;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+body.dark .task-card.haute {
+  border-left-color: #ef9a9a;
+}
+
+body.dark .task-card.moyenne {
+  border-left-color: #ffd54f;
+}
+
+body.dark .task-card.basse {
+  border-left-color: #81c784;
+}
+
+body.dark .priority {
+  color: #eee;
+}
+
+body.dark .task-description,
+body.dark .task-meta span {
+  color: #ccc;
+}
+
+body.dark .task-actions button:first-child {
+  background-color: #b39ddb;
+}
+
+body.dark .task-actions button:first-child:hover {
+  background-color: #7e57c2;
+}
+
+body.dark .task-actions button:last-child {
+  background-color: #7e57c2;
+}
+
+body.dark .task-actions button:last-child:hover {
+  background-color: #5e35b1;
+}
+
+body.dark .edit-dialog {
+  background: linear-gradient(to bottom right, #444, #222);
+  color: #eee;
+  box-shadow: 0 8px 30px rgba(139, 102, 255, 0.7);
+}
+
+body.dark .edit-dialog input,
+body.dark .edit-dialog textarea,
+body.dark .edit-dialog select {
+  background-color: #555;
+  border: 1px solid #999;
+  color: #eee;
+}
