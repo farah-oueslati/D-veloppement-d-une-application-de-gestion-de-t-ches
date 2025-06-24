@@ -1,0 +1,87 @@
+/* ========== MODE SOMBRE POUR LA PAGE DE LOGIN (élégant & violet clair) ========== */
+
+body.dark {
+  background-color: #1a1a1a;
+  color: #eee;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body.dark .container {
+  background-color: transparent;
+}
+
+body.dark .form-container {
+  background-color: #262232;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(143, 129, 174, 0.3);
+  color: #eee;
+  transition: all 0.3s ease;
+}
+
+body.dark input {
+  background-color: #3a324f;
+  color: #f0f0f0;
+  border: 1px solid #8f81ae;
+  border-radius: 8px;
+  padding: 10px;
+  transition: 0.2s ease;
+}
+
+body.dark input::placeholder {
+  color: #bbaed3;
+}
+
+body.dark input:focus {
+  outline: none;
+  border-color: #c4b4ec;
+  box-shadow: 0 0 5px #8f81ae;
+}
+
+body.dark button {
+  background-color: #8f81ae;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+body.dark button:hover {
+  background-color: #a195c7;
+}
+
+body.dark .ghost {
+  background-color: transparent;
+  border: 2px solid #8f81ae;
+  color: #8f81ae;
+  border-radius: 20px;
+  padding: 8px 18px;
+}
+
+body.dark .ghost:hover {
+  background-color: #8f81ae;
+  color: white;
+}
+
+body.dark .overlay {
+  background: linear-gradient(to right, #2a2438, #1d1b29);
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(143, 129, 174, 0.2);
+}
+
+body.dark .overlay-panel h1 span.black {
+  color: #ddd;
+}
+
+body.dark .overlay-panel h1 span.white {
+  color: #c0b0ec;
+}
+
+body.dark footer {
+  background-color: #191726;
+  color: #aaa;
+  padding: 15px 0;
+  text-align: center;
+}
