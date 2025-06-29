@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./style.css";
 import "./dark-login.css";
-import TaskBoard from "./components/KanbanView";
+import KanbanView from "./components/KanbanView";
 
 export default function App() {
   const [rightPanelActive, setRightPanelActive] = useState(false);
@@ -41,7 +41,7 @@ export default function App() {
   };
 
   if (isLoggedIn) {
-    return <TaskBoard onLogout={handleLogout} />;
+    return <KanbanView onLogout={handleLogout} />;
   }
 
   return (
@@ -76,6 +76,12 @@ export default function App() {
         <div className="overlay-container">
           <div className="overlay">
             <div className="overlay-panel overlay-left">
+              <button className="ghost" id="signUp" onClick={handleSignInClick}>
+                SE CONNECTER
+              </button>
+            </div>
+            
+            <div className="overlay-panel overlay-right">
               <div className="logo-container">
                 <img className="logoimg" src="logo.jpg" alt="Logo" />
                 <h1>
@@ -83,13 +89,8 @@ export default function App() {
                   <span className="white">tâche</span>
                 </h1>
               </div>
-              <button className="ghost" id="signIn" onClick={handleSignInClick}>
+              <button className="ghost" id="signIn" onClick={handleSignUpClick}>
                 S'INSCRIRE
-              </button>
-            </div>
-            <div className="overlay-panel overlay-right">
-              <button className="ghost" id="signUp" onClick={handleSignUpClick}>
-                SE CONNECTER
               </button>
             </div>
           </div>
