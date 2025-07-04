@@ -58,6 +58,7 @@ export default function KanbanBoard({ onLogout }) {
   const [editingDate, setEditingDate] = useState({ taskId: null, field: null, tempDate: null, originalDate: null });
   const [editingTask, setEditingTask] = useState(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [filterPriority, setFilterPriority] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
@@ -131,8 +132,10 @@ useEffect(() => {
   };
 
   const handleEditTask = (task) => {
+    setIsEditing(true); // ← on indique qu'on modifie une tâche
     setEditingTask(task);
     setShowEditDialog(true);
+
   };
 
   const handleSaveTask = () => {
@@ -301,6 +304,7 @@ useEffect(() => {
         className="add-task-btn"
         onClick={() => {
           const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+          setIsEditing(false); // ← on indique qu'on ajoute une nouvelle tâche
           setEditingTask({
             id: newId,
             title: '',
@@ -320,8 +324,7 @@ useEffect(() => {
       {showEditDialog && (
         <div className="edit-dialog-overlay">
           <div className="edit-dialog">
-            <h3>{editingTask.id ? "Modifier la tâche" : "Ajouter une tâche"}</h3>
-
+            <h3>{isEditing ? "Modifier la tâche" : "Ajouter une tâche"}</h3>
             <div className="form-group">
               <label>Titre:</label>
               <input
