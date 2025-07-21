@@ -485,9 +485,23 @@ h2 {
 }
 
 /* ========== RESPONSIVE (ÉCRAN PETIT) ========== */
+@media (max-width: 1024px) {
+  .kanban-container {
+    padding: 15px;
+  }
+
+  .kanban-board {
+    gap: 15px;
+  }
+}
+
 @media (max-width: 768px) {
   .kanban-board {
     flex-direction: column;
+  }
+
+  .kanban-column {
+    min-height: auto;
   }
 
   .kanban-controls {
@@ -498,31 +512,56 @@ h2 {
     width: 100%;
   }
 
-  .date-picker-actions {
+  .filters {
     flex-direction: column;
-    align-items: center;
+    gap: 10px;
   }
 
-  .date-picker-actions button {
+  .filters select {
     width: 100%;
-    max-width: 200px;
+  }
+
+  .task-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .task-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .task-actions button {
+    width: 100%;
+  }
+
+  .edit-dialog {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+  }
+
+  .dialog-actions .cancel-btn {
+    margin-right: 0;
+    margin-bottom: 10px;
   }
 }
 
-/* ========== pour les retards ========== */
-.task-card.overdue {
-  border-left: 5px solid #e74c3c;
-  background-color: #ffe6e6;
-}
+@media (max-width: 480px) {
+  .task-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 
-.task-card.upcoming {
-  border-left: 5px solid #f1c40f;
-  background-color: #fffbe6;
-}
+  .kanban-header nav ul {
+    flex-direction: column;
+    gap: 8px;
+  }
 
-.reminder {
-  font-weight: bold;
-  color: #c0392b;
-  margin-top: 5px;
+  .kanban-header nav ul li {
+    margin-left: 0;
+  }
 }
-

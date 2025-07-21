@@ -26,7 +26,7 @@ const initialTasks = [
     status: "En cours",
     priority: "Moyenne",
     category: "Travail",
-    date: new Date("June 21, 2025"),
+    date: new Date("July 10, 2025"),
     deadline: new Date("June 23, 2025"),
   },
   {
@@ -36,8 +36,8 @@ const initialTasks = [
     status: "Terminé",
     priority: "Basse",
     category: "Personnel",
-    date: new Date("June 22, 2025"),
-    deadline: new Date("June 22, 2025"),
+    date: new Date("July 16, 2025"),
+    deadline: new Date("July 16, 2025"),
   },
   {
     id: 4,

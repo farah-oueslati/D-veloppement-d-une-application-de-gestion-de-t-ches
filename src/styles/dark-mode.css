@@ -6,8 +6,12 @@ body.dark {
 }
 
 body.dark .kanban-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
   background-color: #2c2c2c;
-  box-shadow: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   color: #ddd;
 }
 
@@ -16,19 +20,41 @@ body.dark .kanban-header nav ul li {
   color: #b39ddb;
 }
 
+body.dark .kanban-header nav ul li:last-child:hover {
+  color: #d32f2f;
+  text-decoration: underline;
+}
+
 body.dark .kanban-column {
+  flex: 1;
   background-color: #3c3c3c;
+  border-radius: 8px;
+  padding: 15px;
+  min-height: 500px;
 }
 
 body.dark .column-header {
+  margin-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #666;
   color: #ddd;
-  border-bottom-color: #666;
+  text-align: center;
+  font-weight: bold;
 }
 
 body.dark .task-card {
   background-color: #444;
   color: #eee;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+body.dark .task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.85);
 }
 
 body.dark .task-card h4 {
@@ -38,18 +64,22 @@ body.dark .task-card h4 {
 }
 
 body.dark .task-card.haute {
-  border-left-color: #ef9a9a;
+  border-left: 4px solid #ef9a9a;
 }
 
 body.dark .task-card.moyenne {
-  border-left-color: #ffd54f;
+  border-left: 4px solid #ffd54f;
 }
 
 body.dark .task-card.basse {
-  border-left-color: #81c784;
+  border-left: 4px solid #81c784;
 }
 
 body.dark .priority {
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: bold;
   color: #eee;
 }
 
@@ -58,49 +88,150 @@ body.dark .task-meta span {
   color: #ccc;
 }
 
+body.dark .task-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+body.dark .task-meta span {
+  display: block;
+}
+
+body.dark .task-actions {
+  display: flex;
+  gap: 10px;
+}
+
+body.dark .task-actions button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 body.dark .task-actions button:first-child {
   background-color: #b39ddb;
+  color: white;
 }
 
 body.dark .task-actions button:first-child:hover {
   background-color: #7e57c2;
+  transform: translateY(-2px);
 }
 
 body.dark .task-actions button:last-child {
   background-color: #7e57c2;
+  color: white;
 }
 
 body.dark .task-actions button:last-child:hover {
   background-color: #5e35b1;
+  transform: translateY(-2px);
 }
-/*dialogue*/
+
+/* Dialogue */
 
 body.dark .edit-dialog label {
   color: #ebe6e6;
   font-weight: 600;
 }
+
 body.dark .edit-dialog {
   background: linear-gradient(to bottom right, #444, #222);
   color: #eee;
   box-shadow: 0 8px 30px rgba(139, 102, 255, 0.7);
+  padding: 30px;
+  border-radius: 16px;
+  width: 520px;
+  max-width: 90%;
+  font-family: "Segoe UI", sans-serif;
+  position: relative;
+  animation: fadeInScale 0.3s ease-in-out;
 }
 
 body.dark .edit-dialog input,
 body.dark .edit-dialog textarea,
 body.dark .edit-dialog select {
-  background-color: #555;
+  width: 100%;
+  padding: 10px 12px;
   border: 1px solid #999;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #555;
   color: #eee;
+  font-weight: 600;
+  font-family: normal;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+body.dark .edit-dialog input:focus,
+body.dark .edit-dialog textarea:focus,
+body.dark .edit-dialog select:focus {
+  border-color: #a15fd0;
+  box-shadow: 0 0 0 3px rgba(161, 95, 208, 0.2);
+  outline: none;
+}
+
+body.dark .form-group textarea {
+  height: 90px;
+  resize: vertical;
+}
+
+body.dark .dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+body.dark .dialog-actions .confirm-btn,
+body.dark .dialog-actions .cancel-btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+body.dark .dialog-actions .cancel-btn {
+  margin-right: 12px;
+  background-color: #f4f4f4;
+  border: 1px solid #bbb;
+  color: #333;
+}
+
+body.dark .dialog-actions .cancel-btn:hover {
+  background-color: #e2e2e2;
+}
+
+body.dark .dialog-actions .confirm-btn {
+  background-color: #8f81ae;
+  color: white;
+  border: none;
+}
+
+body.dark .dialog-actions .confirm-btn:hover {
+  background-color: #745f9b;
+}
 
 /* === MODE SOMBRE POUR LE CALENDRIER === */
 
 body.dark .react-datepicker {
+  font-family: Arial, sans-serif;
   background-color: #2c2c2c;
   color: #eee;
   border: 1px solid #555;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  border: none;
 }
 
 body.dark .react-datepicker__header {
@@ -112,6 +243,7 @@ body.dark .react-datepicker__current-month,
 body.dark .react-datepicker__day-name,
 body.dark .react-datepicker__day {
   color: #eee;
+  font-weight: 600;
 }
 
 body.dark .react-datepicker__day--selected,
@@ -127,5 +259,87 @@ body.dark .react-datepicker__day:hover {
 
 body.dark .react-datepicker__navigation--next,
 body.dark .react-datepicker__navigation--previous {
-  filter: invert(1); /* pour rendre les flèches visibles */
+  filter: invert(1);
+}
+
+/* === RESPONSIVE POUR MODE SOMBRE === */
+@media (max-width: 1024px) {
+  body.dark .kanban-container {
+    padding: 15px;
+  }
+
+  body.dark .kanban-board {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  body.dark .kanban-board {
+    flex-direction: column;
+  }
+
+  body.dark .kanban-column {
+    min-height: auto;
+  }
+
+  body.dark .kanban-controls {
+    flex-direction: column;
+  }
+
+  body.dark .search-input {
+    width: 100%;
+  }
+
+  body.dark .filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  body.dark .filters select {
+    width: 100%;
+  }
+
+  body.dark .task-meta {
+    grid-template-columns: 1fr;
+  }
+
+  body.dark .task-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  body.dark .task-actions button {
+    width: 100%;
+  }
+
+  body.dark .edit-dialog {
+    width: 95%;
+    padding: 20px;
+  }
+
+  body.dark .dialog-actions {
+    flex-direction: column;
+  }
+
+  body.dark .dialog-actions .cancel-btn {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  body.dark .task-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  body.dark .kanban-header nav ul {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  body.dark .kanban-header nav ul li {
+    margin-left: 0;
+  }
 }
