@@ -2,18 +2,17 @@ import React, { useState } from "react";
 import "./style.css";
 import "./dark-login.css";
 import KanbanView from "./components/KanbanView";
-// import axios from "axios"; // désactivé pour le test frontend
+import axios from "axios";
 
 export default function App() {
   const [rightPanelActive, setRightPanelActive] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // const API_URL = "http://127.0.0.1:8000/api"; // désactivé pour le test frontend
+  const API_URL = "http://127.0.0.1:8000/api/users";
 
   const handleSignUpClick = () => setRightPanelActive(true);
   const handleSignInClick = () => setRightPanelActive(false);
 
-  // FAKE REGISTER
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -22,30 +21,49 @@ export default function App() {
     const email = form.elements.email.value;
     const password = form.elements.password.value;
 
-    // Simuler appel API avec délai
-    setTimeout(() => {
-      console.log("Inscription réussie (simulée)");
+    try {
+      const res = await axios.post(`${API_URL}`, {
+        name,
+        firstname,
+        email,
+        password,
+      },
+    {withCredentials: true,});
+
+      console.log("Inscription réussie:", res.data);
       alert(`Bienvenue ${firstname} ${name} !`);
       form.reset();
       setIsLoggedIn(true);
-    }, 800); // délai simulé
+    } catch (error) {
+      console.log(name,firstname,email,password);
+     // console.error("Erreur lors de l'inscription:", error);
+      alert("Erreur lors de l'inscription.");
+    }
   };
-
-  // FAKE LOGIN
   const handleSignInSubmit = async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const email = form.elements.email.value;
-    const password = form.elements.password.value;
+  e.preventDefault();
+  const form = e.target;
+  const email = form.elements.email.value;
+  const password = form.elements.password.value;
 
-    // Simuler appel API avec délai
-    setTimeout(() => {
-      console.log("Connexion réussie (simulée)");
-      alert("Connexion réussie !");
-      form.reset();
-      setIsLoggedIn(true);
-    }, 800);
-  };
+  try {
+    const res = await axios.post("http://127.0.0.1:8000/api/login", {
+      email,
+      password,
+    }, {
+      withCredentials: true,
+    });
+
+    console.log("Connexion réussie:", res.data);
+    alert("Connexion réussie !");
+    form.reset();
+    setIsLoggedIn(true);
+  } catch (error) {
+    console.error("Erreur lors de la connexion:", error);
+    alert("Email ou mot de passe incorrect.");
+  }
+};
+
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -65,20 +83,8 @@ export default function App() {
             <br />
             <input type="text" placeholder="Nom" name="name" required />
             <input type="text" placeholder="Prénom" name="firstname" required />
-            <input
-              type="email"
-              placeholder="Email"
-              name="email"
-              required
-              pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$"
-            />
-            <input
-              type="password"
-              placeholder="Mot de passe"
-              name="password"
-              required
-              minLength={8}
-            />
+            <input type="email" placeholder="Email" name="email" required/>
+            <input type="password" placeholder="Mot de passe" name="password" required minLength={8}/>
             <br />
             <button type="submit">S'INSCRIRE</button>
           </form>
@@ -89,20 +95,8 @@ export default function App() {
             <h1>Se connecter</h1>
             <br />
             <br />
-            <input
-              type="email"
-              placeholder="Email"
-              name="email"
-              required
-              pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$"
-            />
-            <input
-              type="password"
-              placeholder="Mot de passe"
-              name="password"
-              required
-              minLength={8}
-            />
+            <input type="email" placeholder="Email" name="email" required/>
+            <input type="password" placeholder="Mot de passe" name="password" required minLength={8} />
             <a href="#">Mot de passe oublié?</a>
             <button type="submit">CONNECTER</button>
           </form>
@@ -111,11 +105,11 @@ export default function App() {
         <div className="overlay-container">
           <div className="overlay">
             <div className="overlay-panel overlay-left">
-              <button className="ghost" onClick={handleSignInClick}>
+              <button className="ghost" id="signUp" onClick={handleSignInClick}>
                 SE CONNECTER
               </button>
             </div>
-
+            
             <div className="overlay-panel overlay-right">
               <div className="logo-container">
                 <img className="logoimg" src="logo.jpg" alt="Logo" />
@@ -124,7 +118,7 @@ export default function App() {
                   <span className="white">tâche</span>
                 </h1>
               </div>
-              <button className="ghost" onClick={handleSignUpClick}>
+              <button className="ghost" id="signIn" onClick={handleSignUpClick}>
                 S'INSCRIRE
               </button>
             </div>
