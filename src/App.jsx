@@ -7,6 +7,7 @@ import axios from "axios";
 export default function App() {
   const [rightPanelActive, setRightPanelActive] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState(null); // ajout du token
 
   const API_URL = "http://127.0.0.1:8000/api/users";
 
@@ -22,55 +23,53 @@ export default function App() {
     const password = form.elements.password.value;
 
     try {
-      const res = await axios.post(`${API_URL}`, {
-        name,
-        firstname,
-        email,
-        password,
-      },
-    {withCredentials: true,});
+      const res = await axios.post(
+        `${API_URL}`,
+        { name, firstname, email, password },
+        { withCredentials: true }
+      );
 
       console.log("Inscription réussie:", res.data);
       alert(`Bienvenue ${firstname} ${name} !`);
       form.reset();
       setIsLoggedIn(true);
     } catch (error) {
-      console.log(name,firstname,email,password);
-     // console.error("Erreur lors de l'inscription:", error);
+      console.log(name, firstname, email, password);
       alert("Erreur lors de l'inscription.");
     }
   };
+
   const handleSignInSubmit = async (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const email = form.elements.email.value;
-  const password = form.elements.password.value;
+    e.preventDefault();
+    const form = e.target;
+    const email = form.elements.email.value;
+    const password = form.elements.password.value;
 
-  try {
-    const res = await axios.post("http://127.0.0.1:8000/api/login", {
-      email,
-      password,
-    }, {
-      withCredentials: true,
-    });
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:8000/api/login",
+        { email, password },
+        { withCredentials: true }
+      );
 
-    console.log("Connexion réussie:", res.data);
-    alert("Connexion réussie !");
-    form.reset();
-    setIsLoggedIn(true);
-  } catch (error) {
-    console.error("Erreur lors de la connexion:", error);
-    alert("Email ou mot de passe incorrect.");
-  }
-};
-
+      console.log("Connexion réussie:", res.data);
+      alert("Connexion réussie !");
+      form.reset();
+      setToken(res.data.token); // récupère et enregistre le token
+      setIsLoggedIn(true);
+    } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
+      alert("Email ou mot de passe incorrect.");
+    }
+  };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setToken(null); // supprime le token à la déconnexion
   };
 
   if (isLoggedIn) {
-    return <KanbanView onLogout={handleLogout} />;
+    return <KanbanView onLogout={handleLogout} token={token} />;
   }
 
   return (
@@ -83,8 +82,8 @@ export default function App() {
             <br />
             <input type="text" placeholder="Nom" name="name" required />
             <input type="text" placeholder="Prénom" name="firstname" required />
-            <input type="email" placeholder="Email" name="email" required/>
-            <input type="password" placeholder="Mot de passe" name="password" required minLength={8}/>
+            <input type="email" placeholder="Email" name="email" required />
+            <input type="password" placeholder="Mot de passe" name="password" required minLength={8} />
             <br />
             <button type="submit">S'INSCRIRE</button>
           </form>
@@ -95,7 +94,7 @@ export default function App() {
             <h1>Se connecter</h1>
             <br />
             <br />
-            <input type="email" placeholder="Email" name="email" required/>
+            <input type="email" placeholder="Email" name="email" required />
             <input type="password" placeholder="Mot de passe" name="password" required minLength={8} />
             <a href="#">Mot de passe oublié?</a>
             <button type="submit">CONNECTER</button>
@@ -109,7 +108,7 @@ export default function App() {
                 SE CONNECTER
               </button>
             </div>
-            
+
             <div className="overlay-panel overlay-right">
               <div className="logo-container">
                 <img className="logoimg" src="logo.jpg" alt="Logo" />
@@ -127,7 +126,7 @@ export default function App() {
       </div>
 
       <footer>
-        <p>&copy; 2025 Multitâche. Tous droits réservés.</p>
+        <p>&copy; 2025 Optitâche.</p>
       </footer>
     </>
   );

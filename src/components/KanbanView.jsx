@@ -5,55 +5,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../styles/Kanban.css";
 import '../styles/dark-mode.css';
 
-
-const statuses = ["À faire", "En cours", "Terminé", "Annulé"];
-
-const initialTasks = [
-  {
-    id: 1,
-    title: "Préparer le rapport",
-    description: "Créer un rapport d'activité pour le mois de juin",
-    status: "À faire",
-    priority: "Haute",
-    category: "Travail",
-    date: new Date("June 20, 2025"),
-    deadline: new Date("June 25, 2025"),
-  },
-  {
-    id: 2,
-    title: "Répondre aux emails",
-    description: "Répondre aux emails clients en attente",
-    status: "En cours",
-    priority: "Moyenne",
-    category: "Travail",
-    date: new Date("July 10, 2025"),
-    deadline: new Date("June 23, 2025"),
-  },
-  {
-    id: 3,
-    title: "Faire la présentation",
-    description: "Préparer les slides de la réunion",
-    status: "Terminé",
-    priority: "Basse",
-    category: "Personnel",
-    date: new Date("July 16, 2025"),
-    deadline: new Date("July 16, 2025"),
-  },
-  {
-    id: 4,
-    title: "Préparer le rapport",
-    description: "Créer un rapport d'activité pour le mois de juin",
-    status: "Annulé",
-    priority: "Haute",
-    category: "Travail",
-    date: new Date("June 20, 2025"),
-    deadline: new Date("June 25, 2025"),
-  },
-];
-
-export default function KanbanBoard({ onLogout }) {
-  // Ton état original des tâches
-  const [tasks, setTasks] = useState(initialTasks);
+// Remplacez le composant par celui-ci pour accepter la prop 'token'
+export default function KanbanBoard({ onLogout, token }) {
+  const [tasks, setTasks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingDate, setEditingDate] = useState({ taskId: null, field: null, tempDate: null, originalDate: null });
   const [editingTask, setEditingTask] = useState(null);
@@ -62,91 +16,262 @@ export default function KanbanBoard({ onLogout }) {
   const [filterPriority, setFilterPriority] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
+  
+  // N'oubliez pas les statuses
+  const statuses = ["À faire", "En cours", "Terminé", "Annulé"];
 
-  // ----------- AJOUT MODE CLAIR / SOMBRE -----------
-const [isDarkMode, setIsDarkMode] = useState(() => {
-  return localStorage.getItem("darkMode") === "true";
-});
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("darkMode") === "true";
+  });
 
-useEffect(() => {
-  if (isDarkMode) {
-    document.body.classList.add("dark");
-  } else {
-    document.body.classList.remove("dark");
-  }
-  localStorage.setItem("darkMode", isDarkMode);
-}, [isDarkMode]);
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+    localStorage.setItem("darkMode", isDarkMode);
+  }, [isDarkMode]);
 
-  // -------------------------------------------------
+  // Chargement initial des tâches
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if (!token) {
+        console.warn("Pas de token d'authentification.");
+        setTasks([]);
+        return;
+      }
+      try {
+        const response = await fetch("http://localhost:8000/api/tasks", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.status === 401) {
+          console.error("Session expirée, déconnexion...");
+          onLogout();
+          return;
+        }
+        if (!response.ok) {
+          throw new Error("Erreur lors du chargement des tâches");
+        }
+        const data = await response.json();
+        const formattedTasks = data.map(task => ({
+          ...task,
+          date: task.date ? new Date(task.date) : null,
+          deadline: task.deadline ? new Date(task.deadline) : null,
+        }));
+        setTasks(formattedTasks);
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    };
+    fetchTasks();
+  }, [token, onLogout]);
 
+  // Gestion du drag-and-drop
   const handleDragEnd = (result) => {
     if (!result.destination) return;
     const { source, destination, draggableId } = result;
-
     if (source.droppableId !== destination.droppableId) {
       const taskId = parseInt(draggableId);
       const newStatus = destination.droppableId;
-
-      setTasks(tasks.map(task =>
-        task.id === taskId ? { ...task, status: newStatus, animate: true } : task
+      const taskToUpdate = tasks.find(task => task.id === taskId);
+      if (!taskToUpdate) return;
+      
+      // Mise à jour optimiste
+      const originalTasks = tasks;
+      setTasks(prevTasks => prevTasks.map(task =>
+        task.id === taskId ? { ...task, status: newStatus } : task
       ));
 
-      setTimeout(() => {
-        setTasks(prevTasks =>
-          prevTasks.map(task =>
-            task.id === taskId ? { ...task, animate: false } : task
-          )
-        );
-      }, 500);
+      fetch(`http://localhost:8000/api/tasks/${taskId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // <-- CORRECTION: Utiliser la prop 'token'
+        },
+        body: JSON.stringify({ 
+          ...taskToUpdate, 
+          status: newStatus,
+          date: taskToUpdate.date?.toISOString().split('T')[0] || null,
+          deadline: taskToUpdate.deadline?.toISOString().split('T')[0] || null,
+        }),
+      })
+      .then(res => {
+        if (res.status === 401) throw new Error("Unauthorized");
+        if (!res.ok) throw new Error("Erreur mise à jour tâche");
+        return res.json();
+      })
+      .then(() => {}) // Rien à faire si la requête réussit
+      .catch(err => {
+        console.error(err);
+        alert("Erreur lors de la mise à jour de la tâche");
+        setTasks(originalTasks); // Annule la modification locale
+        if (err.message === "Unauthorized") onLogout();
+      });
     }
   };
 
-  const handlePriorityChange = (taskId, newPriority) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId ? { ...task, priority: newPriority } : task
-    ));
+  // Ajout de la fonction pour ouvrir la modale d'édition
+  const handleEditTask = (taskToEdit) => {
+    setIsEditing(true);
+    setEditingTask({
+      ...taskToEdit,
+      date: taskToEdit.date ? new Date(taskToEdit.date) : null,
+      deadline: taskToEdit.deadline ? new Date(taskToEdit.deadline) : null,
+    });
+    setShowEditDialog(true);
   };
-
-  const handleTempDateChange = (date) => {
-    setEditingDate(prev => ({ ...prev, tempDate: date }));
+  
+  // Ajout de la fonction de suppression de tâche
+  const handleDeleteTask = async (taskId) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) return;
+    try {
+      const res = await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, // <-- CORRECTION: Utiliser la prop 'token'
+        },
+      });
+      if (res.status === 401) {
+        alert("Session expirée, veuillez vous reconnecter.");
+        onLogout();
+        return;
+      }
+      if (!res.ok) throw new Error("Erreur lors de la suppression de la tâche");
+      setTasks(tasks.filter(task => task.id !== taskId));
+      alert("Tâche supprimée avec succès.");
+    } catch (error) {
+      console.error("Erreur:", error);
+      alert("Erreur lors de la suppression: " + error.message);
+    }
   };
-
-  const handleStartEdit = (taskId, field, currentDate) => {
-    setEditingDate({ taskId, field, tempDate: currentDate, originalDate: currentDate });
-  };
-
-  const handleConfirmDate = () => {
-    const { taskId, field, tempDate } = editingDate;
-    setTasks(tasks.map(task =>
-      task.id === taskId ? { ...task, [field]: tempDate } : task
-    ));
-    setEditingDate({ taskId: null, field: null, tempDate: null, originalDate: null });
-  };
-
+  
+  // Ajout de la fonction d'annulation pour l'édition de date
   const handleCancelEdit = () => {
     setEditingDate({ taskId: null, field: null, tempDate: null, originalDate: null });
   };
+  
+  const handleSaveTask = async () => {
 
-  const handleDeleteTask = (taskId) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
-  };
+    if (!editingTask || !editingTask.title || !editingTask.status || !editingTask.priority) {
 
-  const handleEditTask = (task) => {
-    setIsEditing(true); // ← on indique qu'on modifie une tâche
-    setEditingTask(task);
-    setShowEditDialog(true);
+      alert("Veuillez remplir au moins le titre, le statut et la priorité.");
 
-  };
+      return;
 
-  const handleSaveTask = () => {
-    const taskExists = tasks.some(task => task.id === editingTask.id);
-    if (taskExists) {
-      setTasks(tasks.map(task => task.id === editingTask.id ? editingTask : task));
-    } else {
-      setTasks([...tasks, editingTask]);
     }
-    setShowEditDialog(false);
-    setEditingTask(null);
+
+
+
+    try {
+
+      const taskData = {
+
+        title: editingTask.title,
+
+        description: editingTask.description,
+
+        status: editingTask.status,
+
+        priority: editingTask.priority,
+
+        category: editingTask.category,
+
+        // Conversion des dates au format ISO (YYYY-MM-DD)
+
+        date: editingTask.date?.toISOString().split("T")[0] || null,
+
+        deadline: editingTask.deadline?.toISOString().split("T")[0] || null,
+
+      };
+
+
+
+      const url = isEditing ? `http://localhost:8000/api/tasks/${editingTask.id}` : "http://localhost:8000/api/tasks";
+
+      const method = isEditing ? "PUT" : "POST";
+
+
+
+      const res = await fetch(url, {
+
+        method,
+
+        headers: {
+
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${token}`, // <-- N'oubliez pas le token
+
+        },
+
+        body: JSON.stringify(taskData),
+
+      });
+
+
+
+      if (res.status === 401) {
+
+        alert("Session expirée, veuillez vous reconnecter.");
+
+        onLogout();
+
+        return;
+
+      }
+
+
+
+      if (!res.ok) {
+
+        throw new Error("Erreur lors de la sauvegarde de la tâche");
+
+      }
+
+
+
+      const savedTask = await res.json();
+
+
+
+      if (isEditing) {
+
+        // Mise à jour de la tâche existante
+
+        setTasks(tasks.map((task) => (task.id === savedTask.id ? savedTask : task)));
+
+      } else {
+
+        // Ajout de la nouvelle tâche
+
+        setTasks([...tasks, {
+
+          ...savedTask,
+
+          date: savedTask.date ? new Date(savedTask.date) : null,
+
+          deadline: savedTask.deadline ? new Date(savedTask.deadline) : null,
+
+        }]);
+
+      }
+
+      setShowEditDialog(false);
+
+      setEditingTask(null);
+
+    } catch (error) {
+
+      console.error("Erreur:", error);
+
+      alert("Erreur lors de la sauvegarde: " + error.message);
+
+    }
+
   };
 
   const handleCancelEditTask = () => {
@@ -157,15 +282,85 @@ useEffect(() => {
   const handleTaskFieldChange = (field, value) => {
     setEditingTask(prev => ({ ...prev, [field]: value }));
   };
+  const handlePriorityChange = (taskId, newPriority) => {
+    setTasks(tasks.map(task =>
+      task.id === taskId ? { ...task, priority: newPriority } : task
+    ));
+  };
+  const handleTempDateChange = (date) => {
+    setEditingDate(prev => ({ ...prev, tempDate: date }));
+  };
+  const handleStartEdit = (taskId, field, currentDate) => {
+    setEditingDate({ taskId, field, tempDate: currentDate, originalDate: currentDate });
+  };
+const handleConfirmDate = async () => {
+    const { taskId, field, tempDate, originalDate } = editingDate;
 
+    // Mise à jour optimiste de l'état local (l'utilisateur voit le changement immédiatement)
+    setTasks(prevTasks =>
+        prevTasks.map(task =>
+            task.id === taskId ? { ...task, [field]: tempDate } : task
+        )
+    );
+    setEditingDate({ taskId: null, field: null, tempDate: null, originalDate: null });
+
+    // Récupération de la tâche pour envoyer au serveur
+    const taskToUpdate = tasks.find(task => task.id === taskId);
+    if (!taskToUpdate) {
+        console.error("Tâche non trouvée.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                ...taskToUpdate,
+                // Le format de la date doit être YYYY-MM-DD pour le backend
+                date: field === 'date' ? tempDate?.toISOString().split('T')[0] || null : taskToUpdate.date?.toISOString().split('T')[0] || null,
+                deadline: field === 'deadline' ? tempDate?.toISOString().split('T')[0] || null : taskToUpdate.deadline?.toISOString().split('T')[0] || null,
+            }),
+        });
+
+        if (res.status === 401) {
+            alert("Session expirée, veuillez vous reconnecter.");
+            onLogout();
+            return;
+        }
+
+        if (!res.ok) {
+            throw new Error("Erreur lors de la mise à jour de la date sur le serveur.");
+        }
+        
+        // Si la requête réussit, rien d'autre à faire car l'état local est déjà à jour.
+        alert("Date mise à jour avec succès.");
+        
+    } catch (error) {
+        console.error("Erreur:", error);
+        alert("Erreur lors de la mise à jour de la date: " + error.message);
+        
+        // En cas d'erreur, on annule la modification locale pour resynchroniser l'interface avec la BDD
+        setTasks(prevTasks =>
+            prevTasks.map(task =>
+                task.id === taskId ? { ...task, [field]: originalDate } : task
+            )
+        );
+    }
+};
   const formatDate = (date) => {
-    return date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+    if (!date) return "Non définie";
+    const dateObj = new Date(date);
+    return dateObj.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   const filteredTasks = tasks.filter(task => {
-    const matchSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.status.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchSearch = task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.status?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchPriority = filterPriority ? task.priority === filterPriority : true;
     const matchStatus = filterStatus ? task.status === filterStatus : true;
     const matchCategory = filterCategory ? task.category === filterCategory : true;
@@ -174,6 +369,10 @@ useEffect(() => {
 
   return (
     <div className="kanban-container">
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
       <h3>Espace Utilisateur</h3>
       <h3>Espace Utilisateur</h3>
       <h3>Espace Utilisateur</h3>
@@ -258,14 +457,14 @@ useEffect(() => {
                         const isUpcoming = task.deadline > now && task.deadline - now < 3 * 24 * 60 * 60 * 1000 && task.status !== "Terminé";
 
                         return (
-                          <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`task-card ${task.priority.toLowerCase()} ${task.animate ? "status-changed" : ""} ${isOverdue ? "overdue" : ""} ${isUpcoming ? "upcoming" : ""}`}
-                              >
+                            <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`task-card ${task.priority?.toLowerCase() || ''} ${task.animate ? "status-changed" : ""} ${isOverdue ? "overdue" : ""} ${isUpcoming ? "upcoming" : ""}`}
+                                >
                                 <div className="task-header">
                                   <h4>{task.title}</h4>
                                   <span className="priority">{task.priority}</span>
@@ -303,10 +502,8 @@ useEffect(() => {
       <button
         className="add-task-btn"
         onClick={() => {
-          const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
           setIsEditing(false); // ← on indique qu'on ajoute une nouvelle tâche
           setEditingTask({
-            id: newId,
             title: '',
             description: '',
             status: 'À faire',
@@ -317,6 +514,7 @@ useEffect(() => {
           });
           setShowEditDialog(true);
         }}
+
       >
         + Ajouter une tâche
       </button>
@@ -342,7 +540,7 @@ useEffect(() => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-groupN">
               <label>Priorité:</label>
               <select
                 value={editingTask.priority}
