@@ -32,8 +32,12 @@ class TaskController extends Controller
             'deadline' => 'nullable|date',
         ]);
 
-        $validated['user_id'] = Auth::id(); // L'utilisateur connecté
-        return Task::create($validated);
+        // Associe automatiquement l'utilisateur connecté
+        $task = new Task($validated);
+        $task->user_id = Auth::id();
+        $task->save();
+
+        return $task;
     }
 
     /**

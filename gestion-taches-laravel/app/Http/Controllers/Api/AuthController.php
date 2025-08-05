@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+
 class AuthController extends Controller
 {
     public function login(Request $request)
@@ -23,9 +25,14 @@ class AuthController extends Controller
             return response()->json(['message' => 'Identifiants invalides'], 401);
         }
 
+        // Crée un token personnel
+        $token = $user->createToken('api-token')->plainTextToken;
+
         return response()->json([
             'message' => 'Connexion réussie',
-            'user' => $user
+            'user' => $user,
+            'token' => $token,  // <-- renvoi du token ici
         ], 200);
     }
+
 }
