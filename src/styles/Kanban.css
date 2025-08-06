@@ -141,16 +141,74 @@ h2 {
 }
 
 /* ========== COULEURS SELON PRIORITÉ ========== */
+/* Nouveaux styles de fond pour les priorités */
 .task-card.haute {
-  border-left: 4px solid #e74c3c;
+  background: linear-gradient(to right, #ffffff, #ffebee);
 }
 
 .task-card.moyenne {
-  border-left: 4px solid #f39c12;
+  background: linear-gradient(to right, #ffffff, #fff8e1);
 }
 
 .task-card.basse {
-  border-left: 4px solid #2ecc71;
+  background: linear-gradient(to right, #ffffff, #e8f5e9);
+}
+
+/* Nouveaux styles pour les échéances */
+.task-card.overdue-bg {
+  background: linear-gradient(to right, #ffffff, #ffebee);
+  animation: pulse 1s infinite;
+}
+
+.task-card.urgent-bg {
+  background: linear-gradient(to right, #ffffff, #ffccbc);
+}
+
+.task-card.warning-bg {
+  background: linear-gradient(to right, #ffffff, #ffe0b2);
+}
+
+/* Styles combinés (priorité + échéance) */
+.task-card.haute.overdue-bg {
+  background: linear-gradient(to right, #ffebee, #ffcdd2);
+}
+
+.task-card.haute.urgent-bg {
+  background: linear-gradient(to right, #ffebee, #ffab91);
+}
+
+.task-card.haute.warning-bg {
+  background: linear-gradient(to right, #ffebee, #ffcc80);
+}
+
+/* Styles pour les indicateurs de temps */
+.reminder {
+  font-size: 0.8rem;
+  margin-top: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  display: inline-block;
+  color: white;
+}
+
+.reminder.overdue-text {
+  background-color: #ff5252;
+}
+
+.reminder.urgent-text {
+  background-color: #ff7043;
+}
+
+.reminder.warning-text {
+  background-color: #ffa726;
+}
+
+/* Animation subtile */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.9; }
+  100% { opacity: 1; }
 }
 
 /* ========== EN-TÊTE DE TÂCHE ========== */
@@ -174,19 +232,23 @@ h2 {
   font-weight: bold;
 }
 
+/* Indicateurs de priorité */
 .task-card.haute .priority {
-  background-color: #ffebee;
+  background-color: rgba(229, 57, 53, 0.1);
   color: #c62828;
+  border: 1px solid #ffcdd2;
 }
 
 .task-card.moyenne .priority {
-  background-color: #fff8e1;
+  background-color: rgba(255, 167, 38, 0.1);
   color: #f57f17;
+  border: 1px solid #ffe0b2;
 }
 
 .task-card.basse .priority {
-  background-color: #e8f5e9;
+  background-color: rgba(46, 125, 50, 0.1);
   color: #2e7d32;
+  border: 1px solid #c8e6c9;
 }
 
 /* ========== DESCRIPTION DE TÂCHE ========== */
@@ -477,11 +539,31 @@ h2 {
 .status-changed {
   animation: pulse 0.5s;
 }
+.task-card {
+  transition: transform 0.2s, box-shadow 0.2s, background 0.5s ease;
+}
+
+.task-card.urgent {
+  background-color: #ffebee;
+  border-left: 4px solid #e74c3c;
+  animation: pulse 2s infinite;
+}
+
+.task-card.warning {
+  background-color: #fff3e0;
+  border-left: 4px solid #f39c12;
+}
+
+.task-card.overdue {
+  background-color: #ffebee;
+  border-left: 4px solid #c62828;
+  animation: pulse 1s infinite;
+}
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
 }
 
 /* ========== RESPONSIVE (ÉCRAN PETIT) ========== */

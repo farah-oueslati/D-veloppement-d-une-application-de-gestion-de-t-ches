@@ -377,6 +377,11 @@ const handleConfirmDate = async () => {
       <h3>Espace Utilisateur</h3>
       <h3>Espace Utilisateur</h3>
       <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
+      <h3>Espace Utilisateur</h3>
       {/* ----------- BOUTON BASCULE MODE CLAIR/SOMBRE ----------- */}
       <button
         onClick={() => setIsDarkMode(prev => !prev)}
@@ -453,18 +458,24 @@ const handleConfirmDate = async () => {
                       .filter(task => task.status === status)
                       .map((task, index) => {
                         const now = new Date();
-                        const isOverdue = task.deadline < now && task.status !== "Terminé";
-                        const isUpcoming = task.deadline > now && task.deadline - now < 3 * 24 * 60 * 60 * 1000 && task.status !== "Terminé";
+                        const isOverdue = task.deadline && task.deadline < now && task.status !== "Terminé";
+                        const isUpcoming = task.deadline && task.deadline > now && task.status !== "Terminé";
+                        const daysUntilDeadline = task.deadline ? Math.ceil((task.deadline - now) / (1000 * 60 * 60 * 24)) : null;
+                        const deadlineClass = 
+                          isOverdue ? 'overdue-bg' : 
+                          daysUntilDeadline <= 3 ? 'urgent-bg' : 
+                          daysUntilDeadline <= 6 ? 'warning-bg' : 
+                          '';
 
                         return (
-                            <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className={`task-card ${task.priority?.toLowerCase() || ''} ${task.animate ? "status-changed" : ""} ${isOverdue ? "overdue" : ""} ${isUpcoming ? "upcoming" : ""}`}
-                                >
+                          <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className={`task-card ${task.priority?.toLowerCase() || ''} ${task.animate ? "status-changed" : ""} ${deadlineClass}`}
+                              >
                                 <div className="task-header">
                                   <h4>{task.title}</h4>
                                   <span className="priority">{task.priority}</span>
@@ -479,8 +490,16 @@ const handleConfirmDate = async () => {
                                     Échéance: {formatDate(task.deadline)}
                                   </span>
                                 </div>
-                                {isOverdue && <p className="reminder">⚠️ En retard</p>}
-                                {isUpcoming && <p className="reminder">⏳ Échéance proche</p>}
+                                {isOverdue && (
+                                  <p className="reminder overdue-text">
+                                    ⚠️ En retard depuis {Math.abs(daysUntilDeadline)} jour{Math.abs(daysUntilDeadline) > 1 ? 's' : ''}
+                                  </p>
+                                )}
+                                {daysUntilDeadline <= 6 && daysUntilDeadline > 0 && !isOverdue && (
+                                  <p className={`reminder ${daysUntilDeadline <= 3 ? 'urgent-text' : 'warning-text'}`}>
+                                    ⏳ J-{daysUntilDeadline} {daysUntilDeadline <= 3 ? 'Échéance imminente' : 'Échéance approche'}
+                                  </p>
+                                )}
                                 <div className="task-actions">
                                   <button onClick={() => handleEditTask(task)}>Modifier</button>
                                   <button onClick={() => handleDeleteTask(task.id)}>Supprimer</button>
